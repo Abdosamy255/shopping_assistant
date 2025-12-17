@@ -53,6 +53,33 @@ under below less more around about between
 """.split())
 
 # -------------------------
+# Intent keywords (Query Understanding)
+# -------------------------
+
+INTENT_KEYWORDS = {
+    "latest": ["latest", "new", "جديد", "احدث"],
+    "cheap": ["cheap", "رخيص", "ارخص"],
+    "quality": ["quality", "جوده", "كويس", "جيد"],
+    "premium": ["premium", "غالي", "فلاجشيب"],
+    "around_price": ["around", "approximately", "حوالي"],
+}
+
+def extract_intents(text: str):
+    """
+    استخراج نية المستخدم (cheap, latest, quality, etc.)
+    """
+    text = text.lower()
+    intents = []
+
+    for intent, keywords in INTENT_KEYWORDS.items():
+        for kw in keywords:
+            if kw in text:
+                intents.append(intent)
+                break
+
+    return intents
+
+# -------------------------
 # 2) Language detection
 # -------------------------
 
@@ -210,8 +237,11 @@ def preprocess_text(text: str):
 
     tokens = remove_stopwords(tokens, lang)
     tokens = merge_phrases(tokens, lang)
+    intents = extract_intents(text)
 
-    return tokens, lang
+
+    return tokens, lang, intents
+
 
 
 # -------------------------
@@ -225,7 +255,8 @@ if __name__ == "__main__":
         "ارخص كوتش اسود مقاس 46 أقل من 1500",
     ]
     for s in examples:
-        toks, lg = preprocess_text(s)
+        toks, lg, intents = preprocess_text(s)
+        print(f"INTENTS: {intents}")
         print(f"TEXT: {s}")
         print(f"LANG: {lg} | TOKENS: {toks}")
         print("-" * 60)
